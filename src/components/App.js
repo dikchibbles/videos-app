@@ -1,21 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SearchBar from "./SearchBar";
 import Youtube from "../api/Youtube";
 import VideoList from "./VideoList";
 import VideoDetail from "./VideoDetail";
 
+const App = () => {
+    const [videos, setVideos] = useState([]);
+    const [selectedVideo, setSelectedVideo] = useState(null);
 
-class App extends React.Component {
-    state = { 
-        videos: [],
-        selectedVideo: null
-    }
+    useEffect(() => {
+        onFormSubmit('hiphop')
+    }, [])
 
-    componentDidMount() {
-       this.onFormSubmit('hiphop')
-    }
-    
-    onFormSubmit = async (term) => {
+    const onFormSubmit = async (term) => {
         const response = await Youtube.get(`/search`, {
             params: { 
                 part: 'snippet',
@@ -24,33 +21,78 @@ class App extends React.Component {
             }
         })
         const data = await response.data.items;
-        this.setState({ 
-            videos: data, 
-            selectedVideo: data[0]
-        })
+        setVideos(data);
+        setSelectedVideo(data[0]);
     }
 
-    onVideoSelect = (video) => {
-        this.setState({ selectedVideo: video });
-    } 
+    const onVideoSelect = (video) => {
+        setSelectedVideo(video);
+    }
 
-    render() {
-        return (
-            <div className="ui container" style={{marginTop: '10px'}}>
-                <SearchBar onSubmit={this.onFormSubmit} />
-                <div className="ui grid">
-                    <div className="ui row">
-                        <div className="eleven wide column">
-                            <VideoDetail video={this.state.selectedVideo} />
-                        </div>
-                        <div className="five wide column">
-                            <VideoList videos={this.state.videos} onVideoClick={this.onVideoSelect} />
-                        </div>
+    return (
+        <div className="ui container" style={{marginTop: '10px'}}>
+            <SearchBar onSubmit={onFormSubmit} />
+            <div className="ui grid">
+                <div className="ui row">
+                    <div className="eleven wide column">
+                        <VideoDetail video={selectedVideo} />
                     </div>
-                </div>    
-            </div>
-        )
-    }
+                    <div className="five wide column">
+                        <VideoList videos={videos} onVideoClick={onVideoSelect} />
+                    </div>
+                </div>
+            </div>    
+        </div>
+    )
 }
+
+
+// class App extends React.Component {
+//     state = { 
+//         videos: [],
+//         selectedVideo: null
+//     }
+
+//     componentDidMount() {
+//        this.onFormSubmit('hiphop')
+//     }
+    
+//     onFormSubmit = async (term) => {
+//         const response = await Youtube.get(`/search`, {
+//             params: { 
+//                 part: 'snippet',
+//                 q: term,
+//                 type: 'video'
+//             }
+//         })
+//         const data = await response.data.items;
+//         this.setState({ 
+//             videos: data, 
+//             selectedVideo: data[0]
+//         })
+//     }
+
+//     onVideoSelect = (video) => {
+//         this.setState({ selectedVideo: video });
+//     } 
+
+//     render() {
+//         return (
+//             <div className="ui container" style={{marginTop: '10px'}}>
+//                 <SearchBar onSubmit={this.onFormSubmit} />
+//                 <div className="ui grid">
+//                     <div className="ui row">
+//                         <div className="eleven wide column">
+//                             <VideoDetail video={this.state.selectedVideo} />
+//                         </div>
+//                         <div className="five wide column">
+//                             <VideoList videos={this.state.videos} onVideoClick={this.onVideoSelect} />
+//                         </div>
+//                     </div>
+//                 </div>    
+//             </div>
+//         )
+//     }
+// }
 
 export default App;
