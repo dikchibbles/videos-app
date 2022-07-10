@@ -8,7 +8,7 @@ class VideoList extends React.Component {
             return <VideoItem key={uniqid()} video={video} onVideoClick={this.props.onVideoClick} />
         })
 
-        return(
+        return (
             <div className="ui relaxed divided list">{ videos }</div>
         )   
     }
